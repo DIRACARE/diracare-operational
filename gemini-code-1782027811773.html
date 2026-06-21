@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIRACARE OPERATIONAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .tab-active {
+            background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(29, 78, 216, 0.4);
+            border: 1px solid #3b82f6;
+        }
+        .tab-inactive {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        .subtab-active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        .subtab-inactive {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        th {
+            font-weight: 700;
+            color: #f8fafc;
+            background-color: #1e293b;
+        }
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+    </style>
+</head>
+<body class="pb-16 min-h-screen" onload="ambilDataDariSheets()">
+
+    <header class="glass-card sticky top-0 z-50 border-b border-slate-700/80 px-4 py-4 bg-slate-900/95 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto flex flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-1.5 rounded-2xl border border-slate-700 flex items-center justify-center shadow-md shadow-blue-500/10 shrink-0">
+                    <img src="./Logo diracare png.png" alt="DiraCare Logo" class="h-14 w-auto object-contain" onerror="this.src='Logo diracare png.png'">
+                </div>
+                <div>
+                    <h1 class="text-sm font-black tracking-wider text-blue-400 uppercase leading-none mb-1">DIRACARE OPERATIONAL</h1>
+                    <p class="text-[10px] text-slate-400 font-medium">Sistem Cloud Operasional v11.1 (Multi-Unit Stock & Dashboard)</p>
+                </div>
+            </div>
+            <div class="shrink-0">
+                <span id="statusKoneksi" class="inline-flex items-center gap-1.5 bg-slate-850 text-slate-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-slate-700">
+                    <span id="bulletKoneksi" class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="teksKoneksi">Connecting Cloud...</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-3 mt-6">
+
+        <div class="grid grid-cols-3 gap-2 mb-6 max-w-xl mx-auto">
+            <button id="btnMenu1" onclick="pindahMenu(1)" class="tab-active py-3.5 text-xs font-bold rounded-xl text-center transition-all cursor-pointer">
+                📝 1. Input Data
+            </button>
+            <button id="btnMenu2" onclick="pindahMenu(2)" class="tab-inactive py-3.5 text-xs font-bold rounded-xl text-center transition-all cursor-pointer hover:bg-slate-800">
+                📋 2. Tabel Laporan
+            </button>
+            <button id="btnMenu3" onclick="pindahMenu(3)" class="tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer hover:bg-slate-800">
+                📊 3. Dashboard
+            </button>
+        </div>
+
+        <div id="panelMenu1" class="space-y-6 max-w-xl mx-auto">
+            
+            <div class="glass-card p-5 sm:p-6 rounded-2xl shadow-xl bg-slate-900/60 border-t-4 border-t-blue-500">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="text-blue-400 text-xl">🧪</div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Form A: Pemakaian Chemical (Operasional Kerja)</h2>
+                    </div>
+                </div>
+                
+                <form onsubmit="event.preventDefault(); prosesTambahChemical();" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Kategori Layanan</label>
+                            <select id="input_layanan" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold">
+                                <option value="sofa">🛋️ Sofa & Springbed</option>
+                                <option value="bayi">👶 Perlengkapan Bayi</option>
+                                <option value="sepatu">👟 Cuci Sepatu</option>
+                                <option value="karpet">⛺ Cuci Karpet</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tanggal Kerja</label>
+                            <input type="date" id="input_tanggal" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold" required>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Blessting ++</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_blessting_plus" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_blessting_plus" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Blessting Ori</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_blessting_ori" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_blessting_ori" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Sabun Biasa</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_sabun_biasa" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_sabun_biasa" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Sabun D10</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_sabun_d10" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_sabun_d10" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Penetral</span>
+                            <div class="flex gap-1 items-center">
+                                <input type="number" step="0.1" id="chem_penetral" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <span class="text-[10px] text-slate-400 px-1 font-bold">Sendok</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Pembilas</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_pembilas" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_pembilas" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">H2</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_h2" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_h2" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Hasil Kerja & Spesifikasi Item</label>
+                        <textarea id="input_hasil" rows="2" placeholder="Contoh: Selesai cuci 3 unit sofa..." class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white" required></textarea>
+                    </div>
+
+                    <button type="submit" id="btnSimpanChem" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition-all">
+                        💾 SIMPAN PEMAKAIAN CHEMICAL
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass-card p-5 sm:p-6 rounded-2xl shadow-xl bg-slate-900/60 border-t-4 border-t-emerald-500">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="text-emerald-400 text-xl">📦</div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Form B: Pemakaian Material Packing (Keluar)</h2>
+                    </div>
+                </div>
+                
+                <form onsubmit="event.preventDefault(); prosesTambahPacking();" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tanggal Pengemasan</label>
+                        <input type="date" id="input_tanggal_pack" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold" required>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Packaging Springbed</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="number" id="pack_springbed" placeholder="0" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400">
+                                <span class="text-[10px] text-slate-400">Pcs</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Wrapping Sofa</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="number" id="pack_sofa" placeholder="0" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400">
+                                <span class="text-[10px] text-slate-400">Dudukan</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Plastik Karpet</span>
+                            <div class="flex gap-1 items-center">
+                                <input type="number" id="pack_karpet_qty" placeholder="0" class="w-14 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400">
+                                <select id="pack_karpet_ukuran" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="Uk. 25">Uk. 25</option>
+                                    <option value="Uk. 35">Uk. 35</option>
+                                    <option value="Uk. 40">Uk. 40</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnSimpanPack" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition-all">
+                        📦 SIMPAN PEMAKAIAN PACKING
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass-card p-5 sm:p-6 rounded-2xl shadow-xl bg-slate-900/60 border-t-4 border-t-purple-500">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="text-purple-400 text-xl">📥🛒</div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Form C: Pengambilan / Stok Chemical Masuk</h2>
+                    </div>
+                </div>
+                
+                <form onsubmit="event.preventDefault(); prosesTambahStokChemical();" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tanggal Ambil Stok</label>
+                        <input type="date" id="stok_tanggal_chem" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold" required>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-slate-800/50 p-2 rounded-lg flex flex-col justify-center">
+                                <span class="text-[11px] font-bold">Blessting ++</span>
+                                <div class="flex gap-1 mt-1">
+                                    <input type="number" step="0.01" id="stok_bplus" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                                    <select id="stok_unit_bplus" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                        <option value="ml">ml</option>
+                                        <option value="Liter">L</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-slate-800/50 p-2 rounded-lg flex flex-col justify-center">
+                                <span class="text-[11px] font-bold">Blessting Ori</span>
+                                <div class="flex gap-1 mt-1">
+                                    <input type="number" step="0.01" id="stok_bori" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                                    <select id="stok_unit_bori" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                        <option value="ml">ml</option>
+                                        <option value="Liter">L</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-slate-800/50 p-2 rounded-lg flex flex-col justify-center">
+                                <span class="text-[11px] font-bold">Sabun Biasa</span>
+                                <div class="flex gap-1 mt-1">
+                                    <input type="number" step="0.01" id="stok_sbiasa" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                                    <select id="stok_unit_sbiasa" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                        <option value="ml">ml</option>
+                                        <option value="Liter">L</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-slate-800/50 p-2 rounded-lg flex flex-col justify-center">
+                                <span class="text-[11px] font-bold">Sabun D10</span>
+                                <div class="flex gap-1 mt-1">
+                                    <input type="number" step="0.01" id="stok_sd10" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                                    <select id="stok_unit_sd10" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                        <option value="ml">ml</option>
+                                        <option value="Liter">L</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-slate-800/50 p-2 rounded-lg flex flex-col justify-center">
+                                <span class="text-[11px] font-bold">Penetral (Sendok)</span>
+                                <input type="number" id="stok_penetral" placeholder="0" class="w-full mt-1 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                            </div>
+                            <div class="bg-slate-800/50 p-2 rounded-lg flex flex-col justify-center">
+                                <span class="text-[11px] font-bold">Pembilas</span>
+                                <div class="flex gap-1 mt-1">
+                                    <input type="number" step="0.01" id="stok_pembilas" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                                    <select id="stok_unit_pembilas" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                        <option value="ml">ml</option>
+                                        <option value="Liter">L</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/50 p-2 rounded-lg flex justify-between items-center">
+                            <span class="text-[11px] font-bold">H2</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="stok_h2" placeholder="0" class="w-24 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-purple-400">
+                                <select id="stok_unit_h2" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="ml">ml</option>
+                                    <option value="Liter">Liter</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnStokChem" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition-all">
+                        📥 INPUT STOK CHEMICAL MASUK
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass-card p-5 sm:p-6 rounded-2xl shadow-xl bg-slate-900/60 border-t-4 border-t-cyan-500">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="text-cyan-400 text-xl">🛍️📦</div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Form D: Pengambilan / Stok Packing Masuk</h2>
+                    </div>
+                </div>
+                
+                <form onsubmit="event.preventDefault(); prosesTambahStokPacking();" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tanggal Datang Barang</label>
+                        <input type="date" id="stok_tanggal_pack" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold" required>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Stok Pack Springbed (Pcs)</span>
+                            <input type="number" id="stok_pack_springbed" placeholder="0" class="w-20 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-cyan-400">
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Stok Wrapping Sofa (Dudukan)</span>
+                            <input type="number" id="stok_pack_sofa" placeholder="0" class="w-20 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-cyan-400">
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Stok Plastik Karpet (Pcs)</span>
+                            <input type="number" id="stok_pack_karpet" placeholder="0" class="w-20 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-cyan-400">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnStokPack" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition-all">
+                        🛍️ INPUT STOK PACKING MASUK
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="panelMenu2" class="hidden space-y-6">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block">📋 LOG TABEL CHEMICAL (PEMAKAIAN)</span>
+                <div class="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+                    <button id="btnTab_sofa" onclick="pindahSubTabel('sofa')" class="subtab-active text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">🛋️ Sofa</button>
+                    <button id="btnTab_bayi" onclick="pindahSubTabel('bayi')" class="subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">👶 Bayi</button>
+                    <button id="btnTab_sepatu" onclick="pindahSubTabel('sepatu')" class="subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">👟 Sepatu</button>
+                    <button id="btnTab_karpet" onclick="pindahSubTabel('karpet')" class="subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">⛺ Karpet</button>
+                </div>
+
+                <div class="glass-card rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="bg-blue-900 px-3 py-2 border-b border-slate-700">
+                        <span id="judulTabel" class="text-xs font-black uppercase text-white">Laporan Tabel Harian: Sofa & Springbed</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-[11px] text-slate-300">
+                            <thead>
+                                <tr>
+                                    <th>TANGGAL</th>
+                                    <th>Blessting ++</th>
+                                    <th>Blessting Ori</th>
+                                    <th>Sabun Biasa</th>
+                                    <th>Sabun D10</th>
+                                    <th>Penetral</th>
+                                    <th>Pembilas</th>
+                                    <th>H2</th>
+                                    <th class="text-left px-3">Hasil Kerja & Spesifikasi Item</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel_body_utama">
+                                <tr class="text-slate-500"><td colspan="9" class="p-4">Memuat data cloud...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-4 border-t border-slate-800">
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">📦 LOG TABEL MATERIAL PACKING (PEMAKAIAN)</span>
+                <div class="glass-card rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="bg-emerald-900 px-3 py-2 border-b border-slate-700">
+                        <span class="text-xs font-black uppercase text-white">REKAP PEMAKAIAN PLASTIK & WRAPPING</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-[11px] text-slate-300">
+                            <thead>
+                                <tr class="bg-slate-950">
+                                    <th>TANGGAL PACKING</th>
+                                    <th class="text-cyan-300 font-bold bg-slate-900/50">PACK SPRINGBED</th>
+                                    <th class="text-amber-300 font-bold bg-slate-900/50">WRAPPING SOFA</th>
+                                    <th class="text-fuchsia-300 font-bold bg-slate-900/50">PLASTIK KARPET</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel_body_packing">
+                                <tr class="text-slate-500"><td colspan="4" class="p-4 text-center">Belum ada data.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-4 border-t border-slate-800">
+                <span class="text-xs font-bold text-purple-400 uppercase tracking-wider block">📥 HISTORI PENGAMBILAN STOK CHEMICAL MASUK</span>
+                <div class="glass-card rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-[11px] text-slate-300">
+                            <thead>
+                                <tr class="bg-purple-950">
+                                    <th>TANGGAL</th>
+                                    <th>B++</th>
+                                    <th>B.Ori</th>
+                                    <th>S.Biasa</th>
+                                    <th>S.D10</th>
+                                    <th>Netral</th>
+                                    <th>Bilas</th>
+                                    <th>H2</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel_body_stok_chem">
+                                <tr class="text-slate-500"><td colspan="8" class="p-4 text-center">Belum ada data masuk.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panelMenu3" class="hidden space-y-6 max-w-4xl mx-auto">
+            
+            <div class="space-y-2">
+                <span class="text-xs font-black text-blue-400 tracking-wide uppercase">📊 TOTAL DATA NOTA / AKTIVITAS HARIAN MASUK</span>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 relative">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500 rounded-l-xl"></div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 pl-1">SOFA & SPRINGBED</span>
+                        <div class="flex items-baseline gap-1 pl-1">
+                            <span id="dash_nota_sofa" class="text-2xl font-black text-white">0</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Entri</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 relative">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-500 rounded-l-xl"></div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 pl-1">CUCI KARPET</span>
+                        <div class="flex items-baseline gap-1 pl-1">
+                            <span id="dash_nota_karpet" class="text-2xl font-black text-white">0</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Entri</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 relative">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-teal-500 rounded-l-xl"></div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 pl-1">PERLENGKAPAN BAYI</span>
+                        <div class="flex items-baseline gap-1 pl-1">
+                            <span id="dash_nota_bayi" class="text-2xl font-black text-white">0</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Entri</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 relative">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500 rounded-l-xl"></div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1 pl-1">CUCI SEPATU</span>
+                        <div class="flex items-baseline gap-1 pl-1">
+                            <span id="dash_nota_sepatu" class="text-2xl font-black text-white">0</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Entri</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <span class="text-xs font-black text-emerald-400 tracking-wide uppercase">📦 AKUMULASI MATERIAL PACKING TERPAKAI (TOTAL)</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">PLASTIK SPRINGBED</span>
+                            <span id="dash_pack_springbed" class="text-2xl font-black text-cyan-400">0</span>
+                        </div>
+                        <span class="text-[10px] bg-slate-800/80 text-slate-400 px-2.5 py-1 rounded-md font-bold border border-slate-700/60">Pcs</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">WRAPPING SOFA</span>
+                            <span id="dash_pack_sofa" class="text-2xl font-black text-amber-400">0</span>
+                        </div>
+                        <span class="text-[10px] bg-slate-800/80 text-slate-400 px-2.5 py-1 rounded-md font-bold border border-slate-700/60">Dudukan</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">PLASTIK KARPET</span>
+                            <span id="dash_pack_karpet" class="text-2xl font-black text-fuchsia-400">0</span>
+                        </div>
+                        <span class="text-[10px] bg-slate-800/80 text-slate-400 px-2.5 py-1 rounded-md font-bold border border-slate-700/60">Pcs</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <span class="text-xs font-black text-pink-400 tracking-wide uppercase">🧪 AKUMULASI VOLUME CHEMICAL HABIS TERPAKAI</span>
+                <div class="glass-card p-4 rounded-xl border border-slate-700/60 bg-slate-900/40">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">BLESSTING ++</span>
+                            <span id="dash_vol_bplus" class="text-lg font-black text-white">0 ml</span>
+                        </div>
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">BLESSTING ORI</span>
+                            <span id="dash_vol_bori" class="text-lg font-black text-white">0 ml</span>
+                        </div>
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">SABUN BIASA</span>
+                            <span id="dash_vol_sbiasa" class="text-lg font-black text-white">0 ml</span>
+                        </div>
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">SABUN D10</span>
+                            <span id="dash_vol_sd10" class="text-lg font-black text-white">0 ml</span>
+                        </div>
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">PENETRAL</span>
+                            <span id="dash_vol_penetral" class="text-lg font-black text-amber-400">0 Sdk</span>
+                        </div>
+                        <div class="bg-slate-950/40 p-3 rounded-lg border border-slate-800/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">PEMBILAS & H2</span>
+                            <span id="dash_vol_pembilas" class="text-lg font-black text-cyan-400">0 ml</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <span class="text-xs font-black text-purple-400 tracking-wide uppercase">🚚 LOG RIWAYAT AMBIL PASOKAN DARI GUDANG UTAMA</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60">
+                        <span class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-2">📋 PASOKAN CHEMICAL JERIGEN BARU</span>
+                        <div id="box_log_chem_masuk" class="bg-slate-950/50 rounded-lg p-3 text-[11px] text-slate-400 font-mono h-28 overflow-y-auto space-y-1.5">
+                            Tidak ada log pengambilan chemical baru.
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-700/60">
+                        <span class="text-[11px] font-bold text-white flex items-center gap-1.5 mb-2">📦 PASOKAN PLASTIK & WRAPPING ROLL BARU</span>
+                        <div id="box_log_pack_masuk" class="bg-slate-950/50 rounded-lg p-3 text-[11px] text-slate-400 font-mono h-28 overflow-y-auto space-y-1.5">
+                            Tidak ada log pengambilan packing baru.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('input_tanggal').value = new Date().toISOString().split('T')[0];
+        document.getElementById('input_tanggal_pack').value = new Date().toISOString().split('T')[0];
+        document.getElementById('stok_tanggal_chem').value = new Date().toISOString().split('T')[0];
+        document.getElementById('stok_tanggal_pack').value = new Date().toISOString().split('T')[0];
+
+        // URL BARU ANDA SUDAH TERPASANG DI SINI
+        const urlAppScript = "https://script.google.com/macros/s/AKfycby4Dh89iaL4qkPtS1UXWRWImt4cDBbA0Bu_Dg8FIvaa4a0Qxq95sImvaM4dnJlCgEkpUg/exec";
+
+        let databaseUtama = { sofa: { listData: [] }, bayi: { listData: [] }, sepatu: { listData: [] }, karpet: { listData: [] } };
+        let databasePacking = []; 
+        let stokChemicalMasuk = [];
+        let stokPackingMasuk = [];
+        let subTabelAktif = "sofa";
+
+        async function ambilDataDariSheets() {
+            if(urlAppScript === "" || urlAppScript.includes("PASTE_")) {
+                setLocalMode("Belum Set URL");
+                return;
+            }
+            try {
+                const res = await fetch(urlAppScript + "?action=readAll", { method: "GET" });
+                const cloud = await res.json();
+                
+                databaseUtama = cloud.databaseUtama || databaseUtama;
+                databasePacking = cloud.databasePacking || [];
+                stokChemicalMasuk = cloud.stokChemicalMasuk || [];
+                stokPackingMasuk = cloud.stokPackingMasuk || [];
+
+                document.getElementById('statusKoneksi').className = "inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-emerald-800";
+                document.getElementById('bulletKoneksi').className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+                document.getElementById('teksKoneksi').innerText = "Sheets Connected";
+                
+                updateDashboard();
+                renderTabelUtama();
+                renderTabelPacking();
+                renderTabelStokChem();
+            } catch (err) {
+                setLocalMode("CORS / URL Error");
+            }
+        }
+
+        function setLocalMode(msg) {
+            document.getElementById('statusKoneksi').className = "inline-flex items-center gap-1.5 bg-amber-950/80 text-amber-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-amber-800";
+            document.getElementById('bulletKoneksi').className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+            document.getElementById('teksKoneksi').innerText = "Local Mode ("+msg+")";
+            renderTabelUtama();
+            renderTabelPacking();
+        }
+
+        async function prosesTambahChemical() {
+            const btn = document.getElementById('btnSimpanChem');
+            const data = {
+                action: "insertChemical",
+                layanan: document.getElementById('input_layanan').value,
+                tanggal: document.getElementById('input_tanggal').value,
+                b_plus: document.getElementById('chem_blessting_plus').value ? document.getElementById('chem_blessting_plus').value + " " + document.getElementById('unit_blessting_plus').value : "",
+                b_ori: document.getElementById('chem_blessting_ori').value ? document.getElementById('chem_blessting_ori').value + " " + document.getElementById('unit_blessting_ori').value : "",
+                sabun_biasa: document.getElementById('chem_sabun_biasa').value ? document.getElementById('chem_sabun_biasa').value + " " + document.getElementById('unit_sabun_biasa').value : "",
+                sabun_d10: document.getElementById('chem_sabun_d10').value ? document.getElementById('chem_sabun_d10').value + " " + document.getElementById('unit_sabun_d10').value : "",
+                penetral: document.getElementById('chem_penetral').value ? document.getElementById('chem_penetral').value + " Sdk" : "",
+                pembilas: document.getElementById('chem_pembilas').value ? document.getElementById('chem_pembilas').value + " " + document.getElementById('unit_pembilas').value : "",
+                h2: document.getElementById('chem_h2').value ? document.getElementById('chem_h2').value + " " + document.getElementById('unit_h2').value : "",
+                hasil: document.getElementById('input_hasil').value
+            };
+            btn.innerText = "⚡ MENGIRIM DATA..."; btn.disabled = true;
+            try {
+                await fetch(urlAppScript, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+                alert("Data Pemakaian Chemical Berhasil Disimpan!");
+                document.getElementById('input_hasil').value = "";
+                ambilDataDariSheets();
+            } catch(e) { alert("Gagal koneksi cloud."); } finally { btn.innerText = "💾 SIMPAN PEMAKAIAN CHEMICAL"; btn.disabled = false; }
+        }
+
+        async function prosesTambahPacking() {
+            const btn = document.getElementById('btnSimpanPack');
+            const data = {
+                action: "insertPacking",
+                tanggal: document.getElementById('input_tanggal_pack').value,
+                pack_springbed: document.getElementById('pack_springbed').value || "0",
+                pack_sofa: document.getElementById('pack_sofa').value || "0",
+                pack_karpet: (document.getElementById('pack_karpet_qty').value || "0") + " (" + document.getElementById('pack_karpet_ukuran').value + ")"
+            };
+            btn.innerText = "⚡ MENGIRIM DATA..."; btn.disabled = true;
+            try {
+                await fetch(urlAppScript, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+                alert("Data Pemakaian Packing Berhasil Disimpan!");
+                ambilDataDariSheets();
+            } catch(e) { alert("Gagal."); } finally { btn.innerText = "📦 SIMPAN PEMAKAIAN PACKING"; btn.disabled = false; }
+        }
+
+        async function prosesTambahStokChemical() {
+            const btn = document.getElementById('btnStokChem');
+            const data = {
+                action: "insertStokChemical",
+                tanggal: document.getElementById('stok_tanggal_chem').value,
+                b_plus: document.getElementById('stok_bplus').value ? document.getElementById('stok_bplus').value + " " + document.getElementById('stok_unit_bplus').value : "0 ml",
+                b_ori: document.getElementById('stok_bori').value ? document.getElementById('stok_bori').value + " " + document.getElementById('stok_unit_bori').value : "0 ml",
+                sabun_biasa: document.getElementById('stok_sbiasa').value ? document.getElementById('stok_sbiasa').value + " " + document.getElementById('stok_unit_sbiasa').value : "0 ml",
+                sabun_d10: document.getElementById('stok_sd10').value ? document.getElementById('stok_sd10').value + " " + document.getElementById('stok_unit_sd10').value : "0 ml",
+                penetral: document.getElementById('stok_penetral').value ? document.getElementById('stok_penetral').value + " Sdk" : "0 Sdk",
+                pembilas: document.getElementById('stok_pembilas').value ? document.getElementById('stok_pembilas').value + " " + document.getElementById('stok_unit_pembilas').value : "0 ml",
+                h2: document.getElementById('stok_h2').value ? document.getElementById('stok_h2').value + " " + document.getElementById('stok_unit_h2').value : "0 ml"
+            };
+            btn.innerText = "⚡ MENYIMPAN..."; btn.disabled = true;
+            try {
+                await fetch(urlAppScript, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+                alert("Stok Baru Chemical Berhasil Masuk!");
+                ambilDataDariSheets();
+            } catch(e) { alert("Gagal."); } finally { btn.innerText = "📥 INPUT STOK CHEMICAL MASUK"; btn.disabled = false; }
+        }
+
+        async function prosesTambahStokPacking() {
+            const btn = document.getElementById('btnStokPack');
+            const data = {
+                action: "insertStokPacking",
+                tanggal: document.getElementById('stok_tanggal_pack').value,
+                pack_springbed: document.getElementById('stok_pack_springbed').value || "0",
+                pack_sofa: document.getElementById('stok_pack_sofa').value || "0",
+                pack_karpet: document.getElementById('stok_pack_karpet').value || "0"
+            };
+            btn.innerText = "⚡ MENYIMPAN..."; btn.disabled = true;
+            try {
+                await fetch(urlAppScript, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+                alert("Stok Baru Packing Berhasil Masuk!");
+                ambilDataDariSheets();
+            } catch(e) { alert("Gagal."); } finally { btn.innerText = "🛍️ INPUT STOK PACKING MASUK"; btn.disabled = false; }
+        }
+
+        function pindahMenu(menuId) {
+            document.getElementById('panelMenu1').classList.add('hidden');
+            document.getElementById('panelMenu2').classList.add('hidden');
+            document.getElementById('panelMenu3').classList.add('hidden');
+            document.getElementById('btnMenu1').className = "tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+            document.getElementById('btnMenu2').className = "tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+            document.getElementById('btnMenu3').className = "tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+
+            if(menuId === 1) {
+                document.getElementById('panelMenu1').classList.remove('hidden');
+                document.getElementById('btnMenu1').className = "tab-active py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+            } else if(menuId === 2) {
+                document.getElementById('panelMenu2').classList.remove('hidden');
+                document.getElementById('btnMenu2').className = "tab-active py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+                renderTabelUtama(); renderTabelPacking(); renderTabelStokChem();
+            } else if(menuId === 3) {
+                document.getElementById('panelMenu3').classList.remove('hidden');
+                document.getElementById('btnMenu3').className = "tab-active py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+                updateDashboard();
+            }
+        }
+
+        function pindahSubTabel(layananId) {
+            subTabelAktif = layananId;
+            const namaLayanan = { sofa: "Sofa & Springbed", bayi: "Perlengkapan Bayi", sepatu: "Cuci Sepatu", karpet: "Cuci Karpet" };
+            document.getElementById('judulTabel').innerText = "Laporan Tabel Harian: " + namaLayanan[layananId];
+            ['sofa', 'bayi', 'sepatu', 'karpet'].forEach(id => {
+                document.getElementById(`btnTab_${id}`).className = "subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            });
+            document.getElementById(`btnTab_${layananId}`).className = "subtab-active text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            renderTabelUtama();
+        }
+
+        function formatTanggalIndo(rawDate) {
+            if(!rawDate) return "-";
+            const p = rawDate.split('T')[0].split('-');
+            return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : rawDate;
+        }
+
+        function ekstrakKeMl(str) {
+            if(!str) return 0;
+            let teks = str.toString().toLowerCase();
+            let angka = parseFloat(teks.replace(/[^0-9.]/g, ''));
+            if(isNaN(angka)) return 0;
+            if(teks.includes("liter") || teks.includes(" l")) {
+                return angka * 1000;
+            }
+            return angka;
+        }
+
+        function ekstrakAngka(str) {
+            if(!str) return 0;
+            let num = parseFloat(str.toString().replace(/[^0-9.]/g, ''));
+            return isNaN(num) ? 0 : num;
+        }
+
+        function updateDashboard() {
+            document.getElementById('dash_nota_sofa').innerText = databaseUtama.sofa?.listData?.length || 0;
+            document.getElementById('dash_nota_karpet').innerText = databaseUtama.karpet?.listData?.length || 0;
+            document.getElementById('dash_nota_bayi').innerText = databaseUtama.bayi?.listData?.length || 0;
+            document.getElementById('dash_nota_sepatu').innerText = databaseUtama.sepatu?.listData?.length || 0;
+
+            let totalSpringbed = 0, totalSofaPack = 0, totalKarpetPack = 0;
+            databasePacking.forEach(p => { 
+                totalSpringbed += ekstrakAngka(p.pack_springbed); 
+                totalSofaPack += ekstrakAngka(p.pack_sofa); 
+                totalKarpetPack += ekstrakAngka(p.pack_karpet);
+            });
+            document.getElementById('dash_pack_springbed').innerText = totalSpringbed;
+            document.getElementById('dash_pack_sofa').innerText = totalSofaPack;
+            document.getElementById('dash_pack_karpet').innerText = totalKarpetPack;
+
+            let out_bplus = 0, out_bori = 0, out_sbiasa = 0, out_sd10 = 0, out_netral = 0, out_bilas_h2 = 0;
+            ['sofa', 'bayi', 'sepatu', 'karpet'].forEach(kat => {
+                (databaseUtama[kat]?.listData || []).forEach(item => {
+                    out_bplus += ekstrakKeMl(item.b_plus); 
+                    out_bori += ekstrakKeMl(item.b_ori);
+                    out_sbiasa += ekstrakKeMl(item.sabun_biasa); 
+                    out_sd10 += ekstrakKeMl(item.sabun_d10);
+                    out_netral += ekstrakAngka(item.penetral); 
+                    out_bilas_h2 += (ekstrakKeMl(item.pembilas) + ekstrakKeMl(item.h2));
+                });
+            });
+            document.getElementById('dash_vol_bplus').innerText = out_bplus + " ml";
+            document.getElementById('dash_vol_bori').innerText = out_bori + " ml";
+            document.getElementById('dash_vol_sbiasa').innerText = out_sbiasa + " ml";
+            document.getElementById('dash_vol_sd10').innerText = out_sd10 + " ml";
+            document.getElementById('dash_vol_penetral').innerText = out_netral + " Sdk";
+            document.getElementById('dash_vol_pembilas').innerText = out_bilas_h2 + " ml";
+
+            const boxChem = document.getElementById('box_log_chem_masuk');
+            if (stokChemicalMasuk.length > 0) {
+                boxChem.innerHTML = stokChemicalMasuk.map(s => `<div>• [${formatTanggalIndo(s.tanggal)}] Masuk B++: ${s.b_plus}, B.Ori: ${s.b_ori}, S.D10: ${s.sabun_d10}</div>`).join('');
+            } else {
+                boxChem.innerHTML = "Tidak ada log pengambilan chemical baru.";
+            }
+
+            const boxPack = document.getElementById('box_log_pack_masuk');
+            if (stokPackingMasuk.length > 0) {
+                boxPack.innerHTML = stokPackingMasuk.map(p => `<div>• [${formatTanggalIndo(p.tanggal)}] Masuk S.Bed: ${p.pack_springbed} Pcs, Sofa: ${p.pack_sofa} Dudukan</div>`).join('');
+            } else {
+                boxPack.innerHTML = "Tidak ada log pengambilan packing baru.";
+            }
+        }
+
+        function renderTabelUtama() {
+            const tbody = document.getElementById('tabel_body_utama'); tbody.innerHTML = "";
+            const dataKategori = databaseUtama[subTabelAktif]?.listData || [];
+            if(dataKategori.length === 0) { tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-slate-500">Belum ada data.</td></tr>`; return; }
+            dataKategori.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${formatTanggalIndo(item.tanggal)}</td><td class="text-blue-400 font-bold">${item.b_plus || '-'}</td><td>${item.b_ori || '-'}</td><td>${item.sabun_biasa || '-'}</td><td>${item.sabun_d10 || '-'}</td><td class="text-amber-400 font-bold">${item.penetral || '-'}</td><td>${item.pembilas || '-'}</td><td>${item.h2 || '-'}</td><td class="text-left text-white px-3">${item.hasil}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderTabelPacking() {
+            const tbody = document.getElementById('tabel_body_packing'); tbody.innerHTML = "";
+            if(databasePacking.length === 0) { tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-500">Belum ada data.</td></tr>`; return; }
+            databasePacking.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${formatTanggalIndo(p.tanggal)}</td><td class="text-cyan-400 font-black">${p.pack_springbed || '0'}</td><td class="text-amber-400 font-black">${p.pack_sofa || '0'}</td><td class="text-fuchsia-400 font-bold">${p.pack_karpet || '0'}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderTabelStokChem() {
+            const tbody = document.getElementById('tabel_body_stok_chem'); tbody.innerHTML = "";
+            if(stokChemicalMasuk.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-slate-500">Belum ada data masuk.</td></tr>`; return; }
+            stokChemicalMasuk.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${formatTanggalIndo(s.tanggal)}</td><td>${s.b_plus}</td><td>${s.b_ori}</td><td>${s.sabun_biasa}</td><td>${s.sabun_d10}</td><td>${s.penetral}</td><td>${s.pembilas}</td><td>${s.h2}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
